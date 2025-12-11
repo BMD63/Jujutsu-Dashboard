@@ -1,3 +1,5 @@
+import { Providers } from './providers';
+
 export default function RootLayout({
   children,
 }: {
@@ -6,8 +8,10 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body>
-        <main>{children}</main>
+        <Providers>
+          <main>{children}</main>
+        </Providers>
       </body>
     </html>
-  )
+  );
 }
