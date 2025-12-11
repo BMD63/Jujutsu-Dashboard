@@ -4,7 +4,8 @@ EXPOSE 3000
 
 COPY package.json package-lock.json* ./
 
-RUN npm ci
+RUN npm install --no-audit
+
 COPY . .
 
 CMD ["npm", "run", "dev"]
