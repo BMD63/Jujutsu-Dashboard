@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
+import { mockSpirits } from '@/shared/api/mocks/spirits';
 
 export const dynamic = 'force-dynamic';
 
-const EVENT_INTERVAL = 5000;
+const EVENT_INTERVAL = 5000; // 5 секунд
 
 export async function GET(request: NextRequest) {
   const encoder = new TextEncoder();
@@ -16,15 +17,18 @@ export async function GET(request: NextRequest) {
       
       const intervalId = setInterval(() => {
         try {
-          // Имитация обновления духа
-          const spiritId = Math.floor(Math.random() * 5) + 1;
-          const threatLevels = ['low', 'medium', 'high', 'critical'];
+          // Случайно выбираем духа из моковых данных
+          const randomIndex = Math.floor(Math.random() * mockSpirits.length);
+          const spirit = mockSpirits[randomIndex];
+          
+          // Случайно выбираем новый уровень угрозы
+          const threatLevels = ['low', 'medium', 'high', 'critical'] as const;
           const newThreatLevel = threatLevels[Math.floor(Math.random() * 4)];
           
           const eventData = {
             type: 'spirit-updated',
             data: {
-              id: `spirit-${spiritId}`,
+              id: spirit.id, // Правильный ID из моковых данных
               threatLevel: newThreatLevel,
               lastUpdated: new Date().toISOString(),
             },
@@ -33,6 +37,8 @@ export async function GET(request: NextRequest) {
           
           const message = `event: spirit-updated\ndata: ${JSON.stringify(eventData)}\n\n`;
           controller.enqueue(encoder.encode(message));
+          
+          console.log(`SSE: Updated spirit ${spirit.id} to ${newThreatLevel}`);
           
         } catch (error) {
           console.error('SSE error:', error);
