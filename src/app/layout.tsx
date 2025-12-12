@@ -1,4 +1,6 @@
 import { Providers } from './providers';
+import { ToastProvider } from './components/Toaster';
+import './globals.css';
 
 export default function RootLayout({
   children,
@@ -9,7 +11,8 @@ export default function RootLayout({
     <html lang="ru">
       <body>
         <Providers>
-          <main>{children}</main>
+          {children}
+          <ToastProvider />
         </Providers>
       </body>
     </html>

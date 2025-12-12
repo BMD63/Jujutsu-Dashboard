@@ -1,0 +1,63 @@
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  max-width: 300px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.threatLevel {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.threatDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  
+  &.low {
+    background-color: #4CAF50;
+  }
+  
+  &.medium {
+    background-color: #FF9800;
+  }
+  
+  &.high {
+    background-color: #F44336;
+  }
+  
+  &.critical {
+    background-color: #9C27B0;
+  }
+}
+
+.threatLabel {
+  font-weight: bold;
+}
+
+.info {
+  margin: 8px 0;
+}
+
+.timestamp {
+  margin: 8px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.buttonContainer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}

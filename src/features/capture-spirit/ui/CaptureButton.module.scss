@@ -1,0 +1,27 @@
+.button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  
+  &:hover:not(:disabled) {
+    background-color: #45a049;
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.capturedButton {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pending {
+  cursor: wait;
+  opacity: 0.7;
+}
