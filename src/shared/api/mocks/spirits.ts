@@ -7,7 +7,7 @@ export const mockSpirits: Spirit[] = [
     threatLevel: 'high',
     location: 'Shibuya',
     status: 'active',
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
   },
   {
     id: '2', 
@@ -15,7 +15,7 @@ export const mockSpirits: Spirit[] = [
     threatLevel: 'critical',
     location: 'Shinjuku',
     status: 'active',
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
   },
   {
     id: '3',
@@ -23,6 +23,54 @@ export const mockSpirits: Spirit[] = [
     threatLevel: 'medium',
     location: 'Akihabara',
     status: 'active',
-    lastUpdated: new Date().toISOString()
-  }
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: '4',
+    name: 'Tengu',
+    threatLevel: 'low',
+    location: 'Ueno Park',
+    status: 'active',
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: '5',
+    name: 'Kappa',
+    threatLevel: 'medium',
+    location: 'Sumida River',
+    status: 'active',
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: '6',
+    name: 'Nue',
+    threatLevel: 'high',
+    location: 'Roppongi',
+    status: 'active',
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: '7',
+    name: 'Jorogumo',
+    threatLevel: 'critical',
+    location: 'Ginza',
+    status: 'active',
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: '8',
+    name: 'Yuki-onna',
+    threatLevel: 'medium',
+    location: 'Mount Takao',
+    status: 'active',
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: '9',
+    name: 'Hitodama',
+    threatLevel: 'high',
+    location: 'Aokigahara',
+    status: 'active',
+    lastUpdated: new Date().toISOString(),
+  },
 ];

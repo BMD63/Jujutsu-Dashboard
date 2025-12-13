@@ -7,7 +7,8 @@ export const spiritSchema = z.object({
   threatLevel: z.enum(['low', 'medium', 'high', 'critical']),
   location: z.string().min(1),
   status: z.enum(['active', 'capturing', 'captured']),
-  lastUpdated: z.string().datetime()
+  lastUpdated: z.string().datetime(),
+  capturedAt: z.string().datetime().optional(),
 });
 
 export const spiritsArraySchema = z.array(spiritSchema);
