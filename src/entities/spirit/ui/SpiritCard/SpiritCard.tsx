@@ -41,11 +41,13 @@ export const SpiritCard = ({ spirit }: SpiritCardProps) => {
       <p className={styles.info}>📍 {spirit.location}</p>
       <p className={styles.info}>Статус: {statusText[spirit.status]}</p>
       
-      {spirit.capturedAt && (
-        <p className={styles.capturedTime}>
-          🕐 Пойман: {new Date(spirit.capturedAt).toLocaleTimeString()}
-        </p>
-      )}
+      <div className={styles.capturedTimeContainer}>
+        {spirit.capturedAt && (
+          <p className={styles.capturedTime}>
+            🕐 Пойман: {new Date(spirit.capturedAt).toLocaleTimeString()}
+          </p>
+        )}
+      </div>
       
       <p className={styles.timestamp}>
         Обновлено: {new Date(spirit.lastUpdated).toLocaleTimeString()}

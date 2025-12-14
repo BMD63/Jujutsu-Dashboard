@@ -6,6 +6,10 @@
   max-width: 300px;
   background-color: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 280px; // Фиксированная минимальная высота
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .title {
@@ -73,10 +77,17 @@
   text-decoration: line-through;
 }
 
+.capturedTimeContainer {
+  min-height: 20px; // Фиксированная высота для времени capture
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+}
+
 .capturedTime {
   font-size: 12px;
   color: #888;
-  margin: 4px 0;
+  margin: 0;
   font-style: italic;
 }
 
