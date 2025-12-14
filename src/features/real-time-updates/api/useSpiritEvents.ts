@@ -67,7 +67,6 @@ export const useSpiritEvents = () => {
         icon: '🔍',
       });
       
-      console.log(`Respawn: removed ${oldSpiritId}, added ${newSpirit.id}`);
       
     } catch (error) {
       console.error('SSE respawn processing error:', error);
@@ -93,7 +92,6 @@ export const useSpiritEvents = () => {
   const connectSSE = useCallback(() => {
     disconnectSSE();
 
-    console.log(`SSE connecting (attempt ${reconnectAttempts + 1}/${RECONNECT_CONFIG.maxAttempts})`);
     
     const eventSource = new EventSource('/api/events/sse');
     eventSourceRef.current = eventSource;
@@ -101,8 +99,7 @@ export const useSpiritEvents = () => {
     eventSource.addEventListener('connected', () => {
       setIsConnected(true);
       setReconnectAttempts(0);
-      console.log('SSE connected successfully');
-    });
+          });
 
     eventSource.addEventListener('spirit-updated', (event) => {
       try {
@@ -133,8 +130,7 @@ export const useSpiritEvents = () => {
       
       if (reconnectAttempts < RECONNECT_CONFIG.maxAttempts - 1) {
         const delay = calculateReconnectDelay(reconnectAttempts);
-        console.log(`Will reconnect in ${delay}ms`);
-        
+                
         reconnectTimerRef.current = setTimeout(() => {
           setReconnectAttempts(prev => prev + 1);
           connectSSE();
@@ -154,13 +150,8 @@ export const useSpiritEvents = () => {
 
     return () => {
       disconnectSSE();
-      console.log('SSE cleanup complete');
     };
   }, [connectSSE, disconnectSSE]);
-
-  useEffect(() => {
-    console.log(`SSE status: ${isConnected ? 'connected' : 'disconnected'}, attempts: ${reconnectAttempts}`);
-  }, [isConnected, reconnectAttempts]);
 
   return { 
     isConnected, 

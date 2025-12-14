@@ -20,8 +20,7 @@ export async function GET(request: NextRequest) {
       
       const intervalId = setInterval(() => {
         try {
-          console.log('SSE tick - counts:', spiritPool.getCounts());
-          
+                  
           // 1. Обновление threat level случайного активного духа
           const activeSpirit = spiritPool.getRandomActiveSpirit();
           
@@ -42,8 +41,7 @@ export async function GET(request: NextRequest) {
               
               const message = `event: spirit-updated\ndata: ${JSON.stringify(updateEvent)}\n\n`;
               controller.enqueue(encoder.encode(message));
-              
-              console.log(`SSE: Updated spirit ${activeSpirit.id} to ${newThreatLevel}`);
+          
             }
           }
           
@@ -66,11 +64,8 @@ export async function GET(request: NextRequest) {
               const respawnMessage = `event: spirit-respawned\ndata: ${JSON.stringify(respawnEvent)}\n\n`;
               controller.enqueue(encoder.encode(respawnMessage));
               
-              console.log(`SSE: Respawned - removed ${oldSpiritId}, added ${newSpirit.id}`);
-              console.log('New counts:', spiritPool.getCounts());
-            } else {
-              console.log('SSE: No captured spirits to respawn');
-            }
+              (`SSE: Respawneconsole.logd - removed ${oldSpiritId}, added ${newSpirit.id}`);
+            } 
           }
           
         } catch (error) {
