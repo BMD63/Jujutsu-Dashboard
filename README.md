@@ -8,11 +8,9 @@
 ```bash
 docker-compose up app-dev
 ```
-###  Production
-```bash
-docker-compose up app-prod --build
-```
-Приложение доступно: http://localhost:3001
+Приложение доступно: http://localhost:3000
+Или
+Дашборд доступен: http://localhost:3000/monitoring
 
 ## Функционал
 

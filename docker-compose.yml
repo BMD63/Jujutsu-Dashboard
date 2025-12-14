@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  app-dev:
+  app:
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -14,19 +12,5 @@ services:
       - /app/.next
     environment:
       - NODE_ENV=development
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /app/src
-        - action: rebuild
-          path: package.json
-
-  app-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3001:3000"
-    environment:
-      - NODE_ENV=production
+    command: npm run dev
+    network_mode: "bridge"
