@@ -1,13 +1,16 @@
 import { NextRequest } from 'next/server';
 import { spiritsArraySchema } from '@/shared/api/schemas/spirit';
-import { mockSpirits } from '@/shared/api/mocks/spirits';
+import { spiritPool } from '@/shared/api/state/spiritPool';
 
 export async function GET(request: NextRequest) {
   // Имитация задержки сети
   await new Promise(resolve => setTimeout(resolve, 300));
   
-  // ВАЛИДАЦИЯ: проверяем моковые данные через Zod
-  const validatedData = spiritsArraySchema.parse(mockSpirits);
+  // Получаем активных духов из пула
+  const activeSpirits = spiritPool.getActiveSpirits();
+  
+  // Валидируем данные перед отправкой
+  const validatedData = spiritsArraySchema.parse(activeSpirits);
   
   return Response.json(validatedData, {
     headers: {

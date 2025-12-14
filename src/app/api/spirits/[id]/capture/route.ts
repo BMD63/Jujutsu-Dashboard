@@ -1,14 +1,11 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { spiritSchema } from '@/shared/api/schemas/spirit';
+import { spiritPool } from '@/shared/api/state/spiritPool';
 
-// Локальные схемы (чтобы избежать проблем с импортом из вложенной директории)
-const spiritSchema = z.object({
-  id: z.string().min(1),
-  name: z.string().min(1),
-  threatLevel: z.enum(['low', 'medium', 'high', 'critical']),
-  location: z.string().min(1),
-  status: z.enum(['active', 'capturing', 'captured']),
-  lastUpdated: z.string().datetime()
+// Схема для запроса
+const captureRequestSchema = z.object({
+  spiritId: z.string().min(1),
 });
 
 export async function POST(
@@ -28,7 +25,7 @@ export async function POST(
     
     // 2. Парсим тело запроса
     const body = await request.json();
-    const { spiritId } = z.object({ spiritId: z.string().min(1) }).parse(body);
+    const { spiritId } = captureRequestSchema.parse(body);
     
     // 3. Проверяем соответствие ID
     if (spiritId !== id) {
@@ -49,21 +46,23 @@ export async function POST(
       );
     }
     
-    // 5. Имитация успешного захвата
-    const capturedSpirit = spiritSchema.parse({
-      id,
-      name: `Захваченный дух ${id.slice(0, 4)}`,
-      threatLevel: 'low',
-      location: 'Штаб-квартира',
-      status: 'captured',
-      lastUpdated: new Date().toISOString()
-    });
+    // 5. Захватываем духа через пул
+    const capturedSpirit = spiritPool.captureSpirit(spiritId);
     
-    // 6. Возвращаем успешный ответ
+    if (!capturedSpirit) {
+      return Response.json(
+        { success: false, message: 'Дух не найден или уже захвачен' },
+        { status: 404 }
+      );
+    }
+    
+    // 6. Валидируем и возвращаем ответ
+    const validatedSpirit = spiritSchema.parse(capturedSpirit);
+    
     return Response.json({
       success: true,
       message: 'Дух успешно пойман!',
-      spirit: capturedSpirit
+      spirit: validatedSpirit
     });
     
   } catch (error) {

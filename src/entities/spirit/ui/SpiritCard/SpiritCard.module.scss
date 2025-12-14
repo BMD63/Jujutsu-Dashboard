@@ -61,3 +61,25 @@
   display: flex;
   justify-content: center;
 }
+
+.capturedCard {
+  opacity: 0.7;
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.capturedTitle {
+  color: #666;
+  text-decoration: line-through;
+}
+
+.capturedTime {
+  font-size: 12px;
+  color: #888;
+  margin: 4px 0;
+  font-style: italic;
+}
+
+.threatDot.captured {
+  background-color: #999 !important;
+}

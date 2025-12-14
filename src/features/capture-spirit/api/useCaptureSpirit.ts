@@ -55,8 +55,8 @@ export const useCaptureSpirit = () => {
       }
     },
     
-    onSettled: () => {
+   /*  onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['spirits'] });
-    },
+    }, */
   });
 };

@@ -1,9 +1,12 @@
 import { NextRequest } from 'next/server';
-import { mockSpirits } from '@/shared/api/mocks/spirits';
+import { spiritPool } from '@/shared/api/state/spiritPool';
 
 export const dynamic = 'force-dynamic';
 
-const EVENT_INTERVAL = 5000; // 5 секунд
+// Константы конфигурации
+const EVENT_INTERVAL = 5000; // период событий
+const RESPAWN_PROBABILITY = 0.5; // шанс респавна
+const THREAT_LEVELS = ['low', 'medium', 'high', 'critical'] as const;
 
 export async function GET(request: NextRequest) {
   const encoder = new TextEncoder();
@@ -17,28 +20,58 @@ export async function GET(request: NextRequest) {
       
       const intervalId = setInterval(() => {
         try {
-          // Случайно выбираем духа из моковых данных
-          const randomIndex = Math.floor(Math.random() * mockSpirits.length);
-          const spirit = mockSpirits[randomIndex];
+          console.log('SSE tick - counts:', spiritPool.getCounts());
           
-          // Случайно выбираем новый уровень угрозы
-          const threatLevels = ['low', 'medium', 'high', 'critical'] as const;
-          const newThreatLevel = threatLevels[Math.floor(Math.random() * 4)];
+          // 1. Обновление threat level случайного активного духа
+          const activeSpirit = spiritPool.getRandomActiveSpirit();
           
-          const eventData = {
-            type: 'spirit-updated',
-            data: {
-              id: spirit.id, // Правильный ID из моковых данных
-              threatLevel: newThreatLevel,
-              lastUpdated: new Date().toISOString(),
-            },
-            timestamp: new Date().toISOString(),
-          };
+          if (activeSpirit) {
+            const newThreatLevel = THREAT_LEVELS[Math.floor(Math.random() * THREAT_LEVELS.length)];
+            const updated = spiritPool.updateThreatLevel(activeSpirit.id, newThreatLevel);
+            
+            if (updated) {
+              const updateEvent = {
+                type: 'spirit-updated',
+                data: {
+                  id: activeSpirit.id,
+                  threatLevel: newThreatLevel,
+                  lastUpdated: new Date().toISOString(),
+                },
+                timestamp: new Date().toISOString(),
+              };
+              
+              const message = `event: spirit-updated\ndata: ${JSON.stringify(updateEvent)}\n\n`;
+              controller.enqueue(encoder.encode(message));
+              
+              console.log(`SSE: Updated spirit ${activeSpirit.id} to ${newThreatLevel}`);
+            }
+          }
           
-          const message = `event: spirit-updated\ndata: ${JSON.stringify(eventData)}\n\n`;
-          controller.enqueue(encoder.encode(message));
-          
-          console.log(`SSE: Updated spirit ${spirit.id} to ${newThreatLevel}`);
+          // 2. Respawn logic: создаем нового духа взамен captured
+          if (Math.random() < RESPAWN_PROBABILITY) {
+            const respawnResult = spiritPool.respawnSpirit();
+            
+            if (respawnResult) {
+              const { oldSpiritId, newSpirit } = respawnResult;
+              
+              const respawnEvent = {
+                type: 'spirit-respawned',
+                data: {
+                  oldSpiritId,
+                  newSpirit,
+                },
+                timestamp: new Date().toISOString(),
+              };
+              
+              const respawnMessage = `event: spirit-respawned\ndata: ${JSON.stringify(respawnEvent)}\n\n`;
+              controller.enqueue(encoder.encode(respawnMessage));
+              
+              console.log(`SSE: Respawned - removed ${oldSpiritId}, added ${newSpirit.id}`);
+              console.log('New counts:', spiritPool.getCounts());
+            } else {
+              console.log('SSE: No captured spirits to respawn');
+            }
+          }
           
         } catch (error) {
           console.error('SSE error:', error);

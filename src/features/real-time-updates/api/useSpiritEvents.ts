@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 const RECONNECT_CONFIG = {
   baseDelay: 1000,
   maxDelay: 30000,
-  maxAttempts: 5,
+  maxAttempts: 10,
 } as const;
 
 export const useSpiritEvents = () => {
@@ -22,14 +22,20 @@ export const useSpiritEvents = () => {
     try {
       const { id, threatLevel, lastUpdated } = eventData;
       
-      // Обновляем кэш
+      // Обновляем кэш, но только для активных духов
       queryClient.setQueryData<Spirit[]>(['spirits'], (oldSpirits) => {
         if (!oldSpirits) return oldSpirits;
-        return oldSpirits.map(spirit => 
-          spirit.id === id 
+        
+        return oldSpirits.map(spirit => {
+          // Не обновляем captured духов
+          if (spirit.status === 'captured') {
+            return spirit;
+          }
+          
+          return spirit.id === id 
             ? { ...spirit, threatLevel, lastUpdated }
-            : spirit
-        );
+            : spirit;
+        });
       });
       
       toast.success(`Threat level updated: ${threatLevel}`, {
@@ -42,8 +48,33 @@ export const useSpiritEvents = () => {
     }
   }, [queryClient]);
 
+  const handleSpiritRespawn = useCallback((eventData: any) => {
+    try {
+      const { oldSpiritId, newSpirit } = eventData;
+      
+      // Удаляем captured духа, добавляем нового
+      queryClient.setQueryData<Spirit[]>(['spirits'], (oldSpirits) => {
+        if (!oldSpirits) return oldSpirits;
+        
+        // Фильтруем captured духа
+        const filtered = oldSpirits.filter(spirit => spirit.id !== oldSpiritId);
+        // Добавляем нового духа
+        return [...filtered, newSpirit];
+      });
+      
+      toast.success(`New spirit detected in ${newSpirit.location}!`, {
+        duration: 3000,
+        icon: '🔍',
+      });
+      
+      console.log(`Respawn: removed ${oldSpiritId}, added ${newSpirit.id}`);
+      
+    } catch (error) {
+      console.error('SSE respawn processing error:', error);
+    }
+  }, [queryClient]);
+
   const calculateReconnectDelay = (attempt: number): number => {
-    // Экспоненциальная backoff задержка
     const delay = RECONNECT_CONFIG.baseDelay * Math.pow(2, attempt);
     return Math.min(delay, RECONNECT_CONFIG.maxDelay);
   };
@@ -60,7 +91,7 @@ export const useSpiritEvents = () => {
   }, []);
 
   const connectSSE = useCallback(() => {
-    disconnectSSE(); // Очищаем предыдущее соединение
+    disconnectSSE();
 
     console.log(`SSE connecting (attempt ${reconnectAttempts + 1}/${RECONNECT_CONFIG.maxAttempts})`);
     
@@ -81,6 +112,17 @@ export const useSpiritEvents = () => {
         }
       } catch (error) {
         console.error('SSE event parsing error:', error);
+      }
+    });
+
+    eventSource.addEventListener('spirit-respawned', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'spirit-respawned') {
+          handleSpiritRespawn(data.data);
+        }
+      } catch (error) {
+        console.error('SSE respawn parsing error:', error);
       }
     });
 
@@ -105,9 +147,8 @@ export const useSpiritEvents = () => {
         });
       }
     });
-  }, [disconnectSSE, handleSpiritUpdate, reconnectAttempts]);
+  }, [disconnectSSE, handleSpiritUpdate, handleSpiritRespawn, reconnectAttempts]);
 
-  // Основной эффект подключения
   useEffect(() => {
     connectSSE();
 
@@ -117,7 +158,6 @@ export const useSpiritEvents = () => {
     };
   }, [connectSSE, disconnectSSE]);
 
-  // Эффект для логирования статуса
   useEffect(() => {
     console.log(`SSE status: ${isConnected ? 'connected' : 'disconnected'}, attempts: ${reconnectAttempts}`);
   }, [isConnected, reconnectAttempts]);
