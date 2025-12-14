@@ -1,20 +1,32 @@
+version: '3.8'
+
 services:
-  app:
+  app-dev:
     build:
       context: .
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+      - ./src:/app/src
+      - ./public:/app/public
       - /app/node_modules
-    command: sh -c "npm install && npm run dev"
-    networks:
-      - app-network
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: rebuild
+          path: package.json
 
-networks:
-  app-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
